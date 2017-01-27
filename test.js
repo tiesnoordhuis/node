@@ -11,5 +11,14 @@ var data = fs.readFile("input_test.txt", (err, data) => {
   }
 });
 
+var test = "kijken of dit werkt"
+
+fs.readFile("input_test.txt", (err, data) => {
+  if (err){
+    console.log(err.stack);
+    return;
+  }
+  console.log(data.toString());
+})
 
 console.log("Program Ended");
