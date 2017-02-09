@@ -1,6 +1,6 @@
 /* game of life maar nu echt */
 
-const grid = 7; // de groote van de grid waarop het spel gespeeld wordt
+const grid = 6; // de groote van de grid waarop het spel gespeeld wordt
 
 function fillTiles(grid) {
   var tile = [];
@@ -12,7 +12,7 @@ function fillTiles(grid) {
       tileTemp[1] = i1;
       tileTemp[2] = i2;
         if (Math.random() < 0.7) {
-        tileTemp[3] = false;
+        tileTemp[3] = true;
       } else {
         tileTemp[3] = true;
       }
@@ -23,7 +23,7 @@ function fillTiles(grid) {
 }
 
 var tiles = fillTiles(grid);
-//console.log(tiles);
+console.log(tiles);
 
 function printTiles(tiles, grid) {
   var tilesTemp = tiles;
@@ -50,7 +50,9 @@ function printTiles(tiles, grid) {
 }
 
 var print = printTiles(tiles, grid);
-//console.log(print);
+console.log(print);
+printFriendly(print, grid);
+ageCycle(tiles, grid);
 
 function printFriendly(print, grid) {
   var gridTemp = grid;
@@ -60,38 +62,64 @@ function printFriendly(print, grid) {
   }
 }
 
-printFriendly(print, grid);
-
 function ageCycle(tiles, grid) {
+  var tilesPre = tiles;
+  var tilesPost = tiles;
+  var tilePre = [];
+  var tilePost = [];
+  for (var i1 = 2; i1 < grid; i1++) {
+    for (var i2 = 2; i2 < grid; i2++) {
+      tilePre = [];
+      tilePost = [];
+      tilePre[0] = ((((i1-1)*grid)+i2));
+      tilePre[1] = tilesPre[(tilePre[0]-1)][3];
+      tilePre[2] = 0;
+      tilePre[2] += tilesPre[(tilePre[0]-1)-][3]
+    }
+  }
+}
+
+function ageCycleOld(tiles, grid) {
   var gridTemp = grid;
   var tilesTemp = tiles;
+  var tilesTemp2 = tiles;
+  var tilesTemp3 = tiles;
   for (var i1 = 1; i1 < gridTemp-1; i1++) {
     for (var i2 = 1; i2 < gridTemp-1; i2++) {
       var tempTile = [];
+      var tempTile2 = [];
+      console.log(tilesTemp);
       tempTile[0] = ((((i1)*gridTemp)+i2)+1);
       tempTile[1] = tilesTemp[tempTile[0]-1][3];
-      tempTile[2] = tilesTemp[tempTile[0]-gridTemp-2][3];
+      tempTile[2] = 0;
+      tempTile[2] += tilesTemp[tempTile[0]-gridTemp-2][3];
+      console.log(tilesTemp[tempTile[0]-gridTemp-2][3]);
       tempTile[2] += tilesTemp[tempTile[0]-gridTemp-1][3];
+      console.log(tilesTemp[tempTile[0]-gridTemp-1][3]);
       tempTile[2] += tilesTemp[tempTile[0]-gridTemp][3];
-      tempTile[2] += tilesTemp[tempTile[0]-1][3];
-      tempTile[2] += tilesTemp[tempTile[0]+1][3];
+      console.log(tilesTemp[tempTile[0]-gridTemp][3]);
+      tempTile[2] += tilesTemp[tempTile[0]-2][3];
+      console.log(tilesTemp[tempTile[0]-2][3]);
+      tempTile[2] += tilesTemp[tempTile[0]][3];
+      console.log(tilesTemp[tempTile[0]][3]);
       tempTile[2] += tilesTemp[tempTile[0]+gridTemp-2][3];
+      console.log(tilesTemp[tempTile[0]+gridTemp-2][3]);
       tempTile[2] += tilesTemp[tempTile[0]+gridTemp-1][3];
+      console.log(tilesTemp[tempTile[0]+gridTemp-1][3]);
       tempTile[2] += tilesTemp[tempTile[0]+gridTemp][3];
-      console.log(tempTile);
-      var tempTile2 = tempTile;
+      console.log(tilesTemp[tempTile[0]+gridTemp][3]);
+      tilesTemp3[tempTile[0]] = tempTile;
+      console.log(tilesTemp3);
+      tempTile2 = tempTile;
       if (tempTile[1] == true) {
-        if (tempTile[2] < 2) {
-          tempTile2[1] = false;
-        }
-        else if (tempTile[2] < 4) {
+        if (tempTile[2] == 2) {
           tempTile2[1] = true;
         }
-        else if (tempTile[2] < 9) {
-          tempTile2[1] = false;
+        else if (tempTile[2] == 3) {
+          tempTile2[1] = true;
         }
         else {
-          console.log("err ageCycle fout aantal omgevings blokjes");
+          tempTile2[1] = false;
         }
       }
       else if (tempTile[1] == false) {
@@ -99,9 +127,29 @@ function ageCycle(tiles, grid) {
           tempTile2[1] = true;
         }
       }
-      console.log(tempTile2)
+      tilesTemp2[tempTile2[0]-1][3] = tempTile2[1];
+      //console.log(tilesTemp2[tempTile2[0]-1]);
     }
+  }
+  //console.log(tilesTemp2);
+  return tilesTemp2;
+}
+
+function printAge(n) {
+  var tiles2 = [];
+  var print2 = [print];
+  for (var i = 0; i < n; i++) {
+  tiles2[i] = ageCycle(tiles, grid);
+  print2[i+1] = printTiles(tiles2[i], grid);
+  printFriendly(print2[i], grid);
+  console.log("-----------------------------")
+  printFriendly(print2[i+1], grid);
+  console.log(" ");
+  //console.log(tiles2[tiles2.length-1]);
+  tiles =  tiles2[tiles2.length-1];
   }
 }
 
-ageCycle(tiles, grid);
+//printAge(1);
+//printFriendly(printTiles(tiles, grid),grid);
+//console.log(tiles);
