@@ -1,4 +1,1 @@
-hier komt een verhaal te staan
-dat is om te testen
-hooe alles werkt enzo
-leuk hè
+0,1,1,1,0

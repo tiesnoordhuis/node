@@ -22,7 +22,7 @@ function runGame(grid, cycle, dist) {
 
   var bord = maakBord(grid, dist);
   console.log(bord);
-  runCycle(bord, cycle, grid);
+  //runCycle(bord, cycle, grid);
 
 }
 
@@ -32,7 +32,7 @@ function maakBord(grid, dist) {
     bord = maakBordRandom(grid);
   }
   else if (dist === "file") {
-    maakBordFile();
+    bord = maakBordFile();
   }
   else {
     console.log("err, geen geldige distributie in maakBord");
@@ -56,6 +56,8 @@ function maakBordRandom(grid) {
 function maakBordFile() {
   console.log("deze functie is nog niet af");
   var data = loadFile();
+  console.log(data);
+  return data;
 }
 
 function runCycle(bord, cycle, grid) {
@@ -87,14 +89,17 @@ function runCycle(bord, cycle, grid) {
 
 function loadFile() {
   var fs = require("fs");
+  var bord = [];
   var data = fs.readFile("input_test.txt", (err, data) => {
     if (err) {
       return console.error(err);
     }
     else {
-      
-      console.log(data.toString());
 
+      console.log(data.toString());
+      bord = data.toString();
     }
+    console.log(data);
   });
+  return bord;
 }
