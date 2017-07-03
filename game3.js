@@ -1,14 +1,30 @@
 // test om de problemen van de game te vinden
 
 // om alles te laten beginnen
-printVisual(runGame(30));
-calcComplex(runGame(30));
+doAll(10);
+
 function fieldSize() {
   return 10;
 }
 
 
 // vanaf hier de functies
+
+function doAll(n) {
+  var fields = []
+  for (var k = 0; k < 3; k++) {
+    if (k == 0) {
+        fields = runGame(n);
+    }
+    else if (k == 1) {
+      printVisual(fields, n);
+      calcComplex(fields);
+    }
+    else {
+      //console.log(fields);
+    }
+  }
+}
 
 function createField(fieldSize) {
   var field = new Array(fieldSize);
@@ -24,14 +40,14 @@ function createField(fieldSize) {
 }
 
 function populateField(field) {
-  if (false) {
+  if (true) {
     for (var i = 0; i < field.length; i++) {
       for (var j = 0; j < field[i].length; j++) {
-        field[i][j] = 0;
+        field[i][j] = Math.floor(Math.random()+0.5);
       }
     }
   }
-  else if (true) {
+  else if (false) {
     field[1][2] = 1;
     field[2][3] = 1;
     field[3][1] = 1;
@@ -103,20 +119,36 @@ function runGame(cycles) {
   return fields;
 }
 
-function printVisual(fields) {
-  for (var n = 0; n < fields.length; n++) {
-    for (var i = 0; i < fields[n].length; i++) {
-      for (var j = 0; j < fields[n][i].length; j++) {
-        if (fields[n][i][j] == 1) {
-          fields[n][i][j] = "#";
-        }
-        else {
-          fields[n][i][j] = " ";
+function printVisual(fields, n1) {
+  var fields = fields;
+  for (var k = 0; k < 3; k++) {
+    if (k == 0) {
+      var printFields = [];
+      for (var q = 0; q < n1; q++) {
+        printFields[q] = createField(fieldSize());
+      }
+      //console.log(printFields);
+    }
+    else if (k == 1) {
+      for (var n = 0; n < fields.length; n++) {
+        for (var i = 0; i < fields[n].length; i++) {
+          for (var j = 0; j < fields[n][i].length; j++) {
+            if (fields[n][i][j] == 1) {
+              printFields[n][i][j] = "#";
+            }
+            else {
+              printFields[n][i][j] = " ";
+            }
+            //console.log(printFields[n][i][j]);
+          }
         }
       }
     }
+    else {
+        console.log(printFields);
+        //console.log(fields);
+    }
   }
-console.log(fields);
 }
 
 function calcComplex(fields) {
@@ -139,7 +171,7 @@ function calcComplex(fields) {
     }
     else if (n == fields.length+1) {
       var avg = complexAvg(complexPart);
-      console.log(avg);
+      console.log("avg" + avg);
     }
   }
 }
@@ -159,21 +191,30 @@ function complexField(fields, n) {
 
 function fieldSum(field, n) {
   var sum = 0;
-  for (var i = 0; i < field[n].length; i++) {
-    for (var j = 0; j < field[n][i].length; j++) {
-      sum += field[n][i][j];
+  for (var k = 0; k < 3; k++) {
+    if (k == 0) {
+      sum = 0;
+    }
+    else if (k == 1) {
+      for (var i = 0; i < field[n].length; i++) {
+        for (var j = 0; j < field[n][i].length; j++) {
+          sum += field[n][i][j];
+        }
+      }
+    }
+    else {
+      //console.log("sum " + sum + "n " + n);
+      return sum;
     }
   }
-  return sum;
 }
 
 function complexChange(fields, n) {
-  for (var k = 0; k < 2; k++){
-    if (k == 0) {
-      var sum = 0;
-    }
-    else {
+  var sum = 0;
       if (n == 0) {
+        return 0;
+      }
+      else if (!(fieldSum(fields, n) > 0)) {
         return 0;
       }
       else {
@@ -186,11 +227,10 @@ function complexChange(fields, n) {
             }
           }
         }
+        //console.log("sum " + sum + "n " + n);
         return (sum/fieldSum(fields, n));
       }
     }
-  }
-}
 
 function complexAvg(complexPart) {
   var avg = 0;
@@ -198,4 +238,12 @@ function complexAvg(complexPart) {
     avg += (complexPart[i]/complexPart.length);
   }
   return avg;
+}
+
+function fieldSumReduce(fields, n) {
+  var x = field[n].reduce(getSum());
+}
+
+function getSum(total, num) {
+  return total + num;
 }
