@@ -1,7 +1,7 @@
 // test om de problemen van de game te vinden
 
 // om alles te laten beginnen
-doAll(10);
+doAll(20);
 
 function fieldSize() {
   return 10;
@@ -189,16 +189,29 @@ function complexField(fields, n) {
   return complex;
 }
 
-function fieldSum(field, n) {
+function fieldSum(fields, n) {
+  var sum1 = fieldSumReduce(fields, n);
+  var sum2 = fieldSumOld(fields, n);
+  if (sum1 != sum2) {
+    console.log(sum1);
+    console.log(sum2);
+    console.log("kaput");
+  }
+  else {
+    return sum1;
+  }
+}
+
+function fieldSumOld(fields, n) {
   var sum = 0;
   for (var k = 0; k < 3; k++) {
     if (k == 0) {
       sum = 0;
     }
     else if (k == 1) {
-      for (var i = 0; i < field[n].length; i++) {
-        for (var j = 0; j < field[n][i].length; j++) {
-          sum += field[n][i][j];
+      for (var i = 0; i < fields[n].length; i++) {
+        for (var j = 0; j < fields[n][i].length; j++) {
+          sum += fields[n][i][j];
         }
       }
     }
@@ -241,9 +254,18 @@ function complexAvg(complexPart) {
 }
 
 function fieldSumReduce(fields, n) {
-  var x = field[n].reduce(getSum());
+  var x = 0;
+  for (var i = 0; i < fields[n].length; i++) {
+    x += fields[n][i].reduce(getSum);
+  }
+  //console.log(x);
+  return x;
 }
 
 function getSum(total, num) {
   return total + num;
+}
+
+function selectBest(fields) {
+
 }
