@@ -1,7 +1,9 @@
 // test om de problemen van de game te vinden
 
 // om alles te laten beginnen
-doAll(20);
+//doAll(20);
+
+selectBest(10, 15);
 
 function fieldSize() {
   return 10;
@@ -11,7 +13,7 @@ function fieldSize() {
 // vanaf hier de functies
 
 function doAll(n) {
-  var fields = []
+  var fields = [];
   for (var k = 0; k < 3; k++) {
     if (k == 0) {
         fields = runGame(n);
@@ -172,6 +174,7 @@ function calcComplex(fields) {
     else if (n == fields.length+1) {
       var avg = complexAvg(complexPart);
       console.log("avg" + avg);
+      return avg;
     }
   }
 }
@@ -266,6 +269,46 @@ function getSum(total, num) {
   return total + num;
 }
 
-function selectBest(fields) {
-
+function selectBest(n, m) {
+  var bestFields = [];
+  var test = 1;
+  for (var i = 0; i < m; i++) {
+    for (var k = 0; k < 4; k++) {
+      if (k == 0) {
+        var fields = [];
+        var complex = 0;
+      }
+      else if (k == 1) {
+          fields = runGame(n);
+      }
+      else if (k == 2) {
+        complex = calcComplex(fields);
+      }
+      else if (k == 3)  {
+        if (bestFields.lenght < 10 || test == 1) {
+          var fieldsAndComplex = [fields, complex];
+          bestFields.push(fieldsAndComplex);
+          test = 2;
+          console.log(bestFields+"bestFields.length < 10");
+        }
+        else if (bestFields.lenght > 9.5) {
+          for (var q = 0; q < 2; q++) {
+            if (q == 0) {
+            //  bestFields.sort(); // dit moet sort op complex
+            }
+            else if (q == 1) {
+              if (bestFields[9][1] < complex) {
+                var fieldsAndComplex = [fields, complex];
+                bestFields[9] = fieldsAndComplex;
+                console.log(fieldsAndComplex);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  console.log(bestFields);
+  //console.log(bestFields[0][0]);
+  //console.log(bestFields[0][1]);
 }
