@@ -15,10 +15,20 @@ const server = http.createServer((request, response) => {
     console.error(err);
   });
   if (request.method === 'GET' && request.url === '/echo') {
-    request.pipe(response);
+    let body = [];
+    request.on('data', (chunk) => {
+      body.push(chunk);
+    }).on('end', () => {
+      body = Buffer.concat(body).toString();
+      response.write(body);
+      console.log(typeof request);
+      console.log(request.length);
+      response.end(request.rawHeaders.toString());
+    });
     console.log(request.headers['accept-language']);
+    console.log(request.rawHeaders);
   } else {
-    response.statusCode = 404;
+    response.write("404");
     response.end();
   }
 });
