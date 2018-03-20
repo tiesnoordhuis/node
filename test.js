@@ -1,30 +1,24 @@
 /* een node js test file voor oefenen */
 
 var fs = require("fs");
-var http = require("http");
+var data = fs.readFile("input_test.txt", (err, data) => {
+  if (err) {
+    return console.error(err);
+  }
+  else {
+    console.log(data.toString());
 
-const file = fs.createWriteStream("file.txt");
+  }
+});
 
-<<<<<<< HEAD
+var test = "kijken of dit werkt"
+
 fs.readFile("input_test.txt", (err, data) => {
   if (err){
     console.log(err.stack);
     return;
   }
   console.log(data.toString());
-=======
-http.get("http://bellwaldchalet.nl/index.html", response => {
-  response.pipe(file);
-  response.on("end", () => {
-    fs.readFile("file.txt", (err, data) => {
-      if (err){
-        console.log(err.stack);
-        return;
-      }
-      console.log(data.toString());
-    });
-  });
->>>>>>> 35866258c4100b177181fb4663d6fd9709224eda
-});
+})
 
-var test = "kijken of dit werkt";
+console.log("Program Ended");
