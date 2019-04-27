@@ -144,7 +144,7 @@ function play(initSize, cells = [], cycles = 10) {
     var scores = playNCycles(board, cycles);
 
     board.print;
-    console.log(scores);
+    //console.log(scores);
     var totalScore = 0;
     scores.forEach(score => {
         totalScore += score;
@@ -163,15 +163,28 @@ function playNCycles(board, nCycles) {
     return scores;
 }
 
-var initSize = {width: 100, height:100};
+function generateRandomCells(size, nCells) {
+    var cells = [];
+    var generated = 0;
+    var total = size.height * size.width;
+    var chance = nCells / total;
+    while (generated < nCells) {
+        for (let row = 0; row < size.height; row++) {
+            for (let column = 0; column < size.width; column++) {
+                if (generated < nCells && Math.random() < chance) {
+                    cells.push({row: row, column: column});
+                    generated ++;
+                }
+            }
+        }
+    }
+    return cells;
+}
 
-var cells = [];
-cells.push({row: 2, column: 5});
-cells.push({row: 3, column: 6});
-cells.push({row: 4, column: 4});
-cells.push({row: 4, column: 5});
-cells.push({row: 4, column: 6});
+var initSize = {width: 15, height:15};
+var startingCells = 20;
+var cycles = 1000;
 
-var cycles = 100;
+var cells = generateRandomCells(initSize, startingCells);
 
 play(initSize, cells, cycles);
