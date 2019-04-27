@@ -1,18 +1,49 @@
 class Cell {
     constructor(alive) {
         this.alive = alive;
+        this.neighbours = 0;
+        this.setCycle = 0;
+        this.complexity = 0;
     }
+
+    setCell(alive, cycle) {
+        if (alive != this.alive) {
+            if (alive) {
+                this.revive();
+            } else {
+                this.kill();
+            }
+            this.complexity = 1 - (1 / (cycle - this.setCycle + 1));
+            this.setCycle = cycle;
+        } else {
+            this.complexity = 0;
+        }
+    }
+
+    revive() {
+        this.alive = true;
+    }
+
+    kill() {
+        this.alive = false;
+    }
+
+    
 }
 
 class Board {
     constructor(size) {
+        this.cycle = 0;
+        this.complexity = 0;
         this.width = size.width;
         this.height = size.height;
         this.rows = new Array(this.height);
-        this.rows.fill(new Array(this.width));
-        this.rows.forEach(row => {
-            row.fill(new Cell(false));
-        });
+        for (let row = 0; row < this.rows.length; row++) {
+            this.rows[row] = new Array(this.width);
+            for (let column = 0; column < this.rows[row].length; column++) {
+                this.rows[row][column] = new Cell(false);
+            }
+        }
     }
 
     get print() {
@@ -28,11 +59,119 @@ class Board {
             })
             console.log(string);
         });
+        console.log("");
+    }
+
+    setCell(position, alive, cycle = 0) {
+        this.rows[position.row][position.column].setCell(alive, cycle);
+    }
+
+    doCycle() {
+        this.complexity = 0;
+        this.cycle ++;
+        this.setAllNeighbours();
+        this.rows.forEach((columns, row) => {
+            columns.forEach((cell, column) => {
+                if ((cell.alive && cell.neighbours > 1 && cell.neighbours < 4) ||
+                    (!cell.alive && cell.neighbours === 3)) {
+                    cell.setCell(true, this.cycle);
+                } else {
+                    cell.setCell(false, this.cycle);
+                }
+                this.complexity += cell.complexity;
+            })
+        })
+    }
+
+    setAllNeighbours() {
+        this.rows.forEach((columns, row) => {
+            columns.forEach((cell, column) => {
+                cell.neighbours = this.getNeighbours({row: row, column: column});
+            })
+        })
+    }
+
+    getNeighbours(position) {
+        let left = 0, top = 0;
+        let right = this.width - 1;
+        let bottom = this.height - 1;
+        if (position.row > top) {
+            top = position.row - 1;
+        }
+        if (position.row < bottom) {
+            bottom = position.row + 1;
+        }
+        if (position.column > left) {
+            left = position.column - 1;
+        }
+        if (position.column < right) {
+            right = position.column + 1;
+        }
+        let sum = 0;
+        for (let row = top; row <= bottom; row++) {
+            for (let column = left; column <= right; column++) {
+                if (this.rows[row][column].alive) {
+                    sum ++;
+                }
+            }            
+        }
+        if (this.rows[position.row][position.column].alive) {
+            sum --;
+        }
+        return sum;
     }
 }
 
-var initSize = {width: 10, height:10};
+function initBoard(initSize, cells = []) {
+    let board = new Board(initSize);
 
-var initBoard = new Board(initSize);
+    cells.forEach(cell => {
+        board.setCell(cell, true);
+    })
 
-initBoard.print;
+    var cellPosition = {
+        row: 2,
+        column: 5,
+    }
+    
+    return board;
+}
+
+function play(initSize, cells = [], cycles = 10) {
+    var board = initBoard(initSize, cells);
+    board.print;
+
+    var scores = playNCycles(board, cycles);
+
+    board.print;
+    console.log(scores);
+    var totalScore = 0;
+    scores.forEach(score => {
+        totalScore += score;
+    })
+    var avgScore = totalScore / scores.length;
+    console.log(`gemmiddelde score is: ` + avgScore + " na " + scores.length + " cyles");
+}
+
+function playNCycles(board, nCycles) {
+    var scores = []
+    for (let cycle = 0; cycle < nCycles; cycle++) {
+        board.doCycle();
+        scores.push(board.complexity);
+        //board.print;        
+    }
+    return scores;
+}
+
+var initSize = {width: 100, height:100};
+
+var cells = [];
+cells.push({row: 2, column: 5});
+cells.push({row: 3, column: 6});
+cells.push({row: 4, column: 4});
+cells.push({row: 4, column: 5});
+cells.push({row: 4, column: 6});
+
+var cycles = 100;
+
+play(initSize, cells, cycles);
