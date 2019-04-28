@@ -120,6 +120,47 @@ class Board {
         }
         return sum;
     }
+
+    evolve(factor) {
+        let chance = 1 / factor;
+        this.cellsToEvolve = [];
+        this.rows.forEach((row, rowIndex) => {
+            row.forEach((column, columnIndex) => {
+                if (column.alive) {
+                    this.cellsToEvolve.push({row: rowIndex, column: columnIndex});
+                }
+            })
+        })
+        this.cellsToEvolve.forEach(position => {
+            let left = 0, top = 0;
+            let right = this.width - 1;
+            let bottom = this.height - 1;
+            if (position.row > top) {
+                top = position.row - 1;
+            }
+            if (position.row < bottom) {
+                bottom = position.row + 1;
+            }
+            if (position.column > left) {
+                left = position.column - 1;
+            }
+            if (position.column < right) {
+                right = position.column + 1;
+            }
+            let possibleCells = (right - left + 1) * ( bottom - top + 1);
+            for (let row = top; row <= bottom; row++) {
+                for (let column = left; column <= right; column++) {
+                    if (Math.random() <= 1 / possibleCells) {
+                        this.rows[row][column].setCell(true);
+                    }
+                }            
+            }
+        })
+    }
+
+    get getBoard() {
+        return this.rows;
+    }
 }
 
 function initBoard(initSize, cells = []) {
@@ -139,6 +180,8 @@ function initBoard(initSize, cells = []) {
 
 function play(initSize, cells = [], cycles = 10) {
     var board = initBoard(initSize, cells);
+    board.print;
+    board.evolve(1);
     board.print;
 
     var scores = playNCycles(board, cycles);
