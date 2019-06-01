@@ -20,9 +20,14 @@ class Network {
         this.layers.forEach(layer => {
             layer.calcValues();
         })
-        console.log("calc output");
         this.outputLayer.calcValues();
-    }
+	}
+	
+	improve(succesFactor) {
+		this.layers.forEach((layer) => {
+			layer.improve(succesFactor);
+		})
+	}
 }
 
 class Layer {
@@ -33,11 +38,16 @@ class Layer {
     }
 
     calcValues() {
-        console.log("calc Layer");
         this.nodes.forEach(node => {
             node.calcValue();
         })
-    }
+	}
+	
+	improve(succesFactor) {
+		this.nodes.forEach((node) => {
+			node.improve(succesFactor);
+		})
+	}
 }
 
 class Node {
@@ -53,46 +63,44 @@ class Node {
         this.connections.forEach(connection => {
             this.value += connection.value;
         })
-        this.value = this.value / this.connections.length;
-        console.log(this.value);
-    }
+		this.value = this.value / this.connections.length;
+		return this.value;
+	}
+	
+	improve(succesFactor) {
+		this.connections.forEach((connection) => {
+			connection.improve(succesFactor);
+		})
+	}
 }
 
 class Connection {
     constructor(refValue, weight = (Math.random() * 2 - 1)) {
         this.refValue = refValue;
         this.weight = weight;
+        this.oldWeight = 0;
     }
 
     get value() {
         return this.refValue.value * this.weight;
     }
+
+    improve(succesFactor) {
+		let calc = this.weight - this.oldWeight;
+		this.oldWeight = this.weight;
+		if (succesFactor > 0) {
+			this.weight += (calc * Math.random()) / succesFactor;
+		} else if (succesFactor < 0) {
+			this.weight -= (calc * Math.random()) / succesFactor;
+		} else {
+			this.weight += (Math.random() - 0,5) / 1000
+		}
+    } 
 }
 
-var inputNode = {value: 1};
-var outputNode = {value: 1};
-
-var layersConstruct= {
-    inputLayer: {
-        n_nodes: 1,
-        nodes: [
-            inputNode,
-        ],
-    },
-    outputLayer: {
-        n_nodes: 1,
-        nodes: [
-            outputNode,
-        ],
-    },
-    secretLayers: [
-        {n_nodes: 5},
-        {n_nodes: 5},
-        {n_nodes: 5},
-    ],
+export {
+    Network,
+    Layer,
+    Node,
+    Connection,
 }
-
-var test = new Network(layersConstruct);
-test.calcOutput();
-
-console.log("finished");
