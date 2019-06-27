@@ -1,5 +1,4 @@
 import { Network, Layer, Node, Connection } from "./Classes/Network.mjs";
-//import * as { Network } from "./Classes/Network.mjs";
 
 var inputNode = {value: 1};
 var outputNode = {value: 1};
