@@ -23,7 +23,7 @@ class Network {
         this.outputLayer.calcValues();
 	}
 	
-	improve(succesFactor) {
+	improve(succesFactor = 0) {
 		this.layers.forEach((layer) => {
 			layer.improve(succesFactor);
 		})
@@ -60,42 +60,76 @@ class Node {
     }
 
     calcValue() {
+        let combinedConnectionValues = 0
         this.connections.forEach(connection => {
-            this.value += connection.value;
+            combinedConnectionValues += connection.value;
         })
-		this.value = this.value / this.connections.length;
+		this.value = this.normalizeValue(combinedConnectionValues);
 		return this.value;
-	}
+    }
+    
+    normalizeValue(valuesSum) {
+        return valuesSum / (Math.abs(valuesSum) + 1);
+    }
 	
 	improve(succesFactor) {
-		this.connections.forEach((connection) => {
-			connection.improve(succesFactor);
-		})
-	}
+        let bestConnection = this.selectBestConnection();
+        bestConnection.increaseDependence();
+        let worstConnection = this.selectWorstConnection();
+        worstConnection.decreaseDependence();
+    }
+    
+    selectBestConnection() {
+        let bestConnection = this.connections.reduce((prev, current) => {
+            return (prev.refValue.value > current.refValue.value) ? prev : current
+        })
+        return bestConnection;
+    }
+
+    selectWorstConnection() {
+        let worstConnection = this.connections.reduce((prev, current) => {
+            return (prev.refValue.value < current.refValue.value) ? prev : current
+        })
+        return worstConnection;
+    }
 }
 
 class Connection {
-    constructor(refValue, weight = (Math.random() * 2 - 1)) {
+    constructor(refValue, min = -100, max = 100, distribution = this.defaultWeightDistribution) {
         this.refValue = refValue;
-        this.weight = weight;
-        this.oldWeight = 0;
+        this.weight = distribution(min, max);
+    }
+
+    defaultWeightDistribution(min, max, onlyIntegers = true) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        let weight = Math.random() * (max - min + 1) + min;
+        if (onlyIntegers) {
+            return Math.floor(weight);
+        }
+        return weight;
     }
 
     get value() {
         return this.refValue.value * this.weight;
     }
 
-    improve(succesFactor) {
-		let calc = this.weight - this.oldWeight;
-		this.oldWeight = this.weight;
-		if (succesFactor > 0) {
-			this.weight += (calc * Math.random()) / succesFactor;
-		} else if (succesFactor < 0) {
-			this.weight -= (calc * Math.random()) / succesFactor;
-		} else {
-			this.weight += (Math.random() - 0,5) / 1000
-		}
-    } 
+    //makes the connection more significant
+    increaseDependence(correlation = 1) {
+        if (this.refValue < 0) {
+            this.weight -= correlation;
+        } else if (this.refValue > 0) {
+            this.weight += correlation;
+        }
+    }
+
+    decreaseDependence() {
+        if (this.weight > 0) {
+            this.weight --;
+        } else if (this.weight < 0) {
+            this.weight ++;
+        }
+    }
 }
 
 export {

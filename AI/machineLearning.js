@@ -1,20 +1,16 @@
 import { Network, Layer, Node, Connection } from "./Classes/Network.mjs";
 
-var inputNode = {value: 1};
-var outputNode = {value: 1};
+var inputNodes = [{value: 1}, {value: 0.5}];
+var outputNodes = [{value: 0}, {value: 0}];
 
 var layersConstruct= {
     inputLayer: {
-        n_nodes: 1,
-        nodes: [
-            inputNode,
-        ],
+        n_nodes: 2,
+        nodes: inputNodes,
     },
     outputLayer: {
-        n_nodes: 1,
-        nodes: [
-            outputNode,
-        ],
+        n_nodes: 2,
+        nodes: outputNodes,
     },
     secretLayers: [
         {n_nodes: 5},
